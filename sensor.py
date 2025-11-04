@@ -1,8 +1,11 @@
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .modbus_bridge import DviModbusBridge
+from .const import DOMAIN
 
-# FC04 input registers: temperature, pressure, etc.
 FC04_SENSORS = {
     0x01: ("CV Forward", "°C", 0.1),
     0x02: ("CV Return", "°C", 0.1),
@@ -14,7 +17,6 @@ FC04_SENSORS = {
     0x12: ("Compressor LP", "bar", 0.1)
 }
 
-# FC01 coils: binary outputs
 COIL_SENSORS = {
     0: "Soft starter Compressor",
     3: "Heating element",
@@ -22,8 +24,13 @@ COIL_SENSORS = {
     12: "Circ. pump CV"
 }
 
-async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
-    bridge = DviModbusBridge("/dev/serial/by-id/usb-STMicroelectronics_STM32_Virtual_COM_Port_48D874673036-if00", 0x10)
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
+    port = entry.data["port"]
+    slave_id = entry.data["slave_id"]
+
+    # Create and store bridge instance
+    bridge = DviModbusBridge(port, slave_id)
+    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = bridge
 
     entities = []
 
@@ -40,9 +47,8 @@ class DviSensor(SensorEntity):
         self._attr_name = name
         self._register = register
         self._bridge = bridge
-        self._unit = unit
-        self._scale = scale
         self._attr_native_unit_of_measurement = unit
+        self._scale = scale
         self._attr_native_value = None
 
     async def async_update(self):
@@ -61,4 +67,3 @@ class DviCoil(BinarySensorEntity):
         bits = self._bridge.read_coils()
         if bits and self._index < len(bits):
             self._attr_is_on = bool(bits[self._index])
-
