@@ -5,4 +5,7 @@
   "documentation": "https://github.com/yourrepo/dvi_bridge",
   "requirements": ["minimalmodbus==2.1.1"],
   "codeowners": ["@ruteclrp"]
+  "config_flow": true,
+  "integration_type": "device",
+  "iot_class": "local_polling"
 }
