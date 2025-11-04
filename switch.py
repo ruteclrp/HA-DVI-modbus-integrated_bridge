@@ -1,7 +1,10 @@
 from homeassistant.components.switch import SwitchEntity
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .modbus_bridge import DviModbusBridge
+from .const import DOMAIN
 
-# Map your writable Modbus registers to switch names
 SWITCHES = {
     0x10A: "VV State",
     0x101: "CV State",
@@ -10,34 +13,26 @@ SWITCHES = {
     0x10F: "TV State"
 }
 
-async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
-    bridge = DviModbusBridge("/dev/serial/by-id/usb-STMicroelectronics_STM32_Virtual_COM_Port_48D874673036-if00", 0x10)
-    switches = [DviSwitch(name, reg, bridge) for reg, name in SWITCHES.items()]
-    async_add_entities(switches)
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
+    bridge = hass.data[DOMAIN][entry.entry_id]
+    entities = [DviSwitch(name, reg, bridge) for reg, name in SWITCHES.items()]
+    async_add_entities(entities)
 
 class DviSwitch(SwitchEntity):
     def __init__(self, name, register, bridge):
-        self._name = name
+        self._attr_name = name
         self._register = register
         self._bridge = bridge
-        self._state = None
-
-    @property
-    def name(self):
-        return self._name
-
-    @property
-    def is_on(self):
-        return self._state
+        self._attr_is_on = None
 
     async def async_turn_on(self, **kwargs):
         self._bridge.write_register(self._register, 1)
-        self._state = True
+        self._attr_is_on = True
 
     async def async_turn_off(self, **kwargs):
         self._bridge.write_register(self._register, 0)
-        self._state = False
+        self._attr_is_on = False
 
     async def async_update(self):
         val = self._bridge.read_via_fc06(self._register)
-        self._state = bool(val)
+        self._attr_is_on = bool(val)
