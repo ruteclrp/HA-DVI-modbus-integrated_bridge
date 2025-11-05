@@ -1,1 +1,205 @@
+type: picture-elements
+title: DVI LV12 Compact varmepumpe
+image: /local/images/dvi.gif?v=2
+style:
+  hight: 50%
+  Width: 50%
+elements:
+  - type: conditional
+    conditions:
+      - entity: binary_sensor.dvi_lv12_re5_circ_pp_cv
+        state: "on"
+    elements:
+      - type: image
+        image: /local/images/CV_on.gif
+        style:
+          top: 78%
+          left: 89%
+          width: 21%
+      - type: image
+        image: /local/images/CVflow_on.gif
+        style:
+          top: 88.9%
+          left: 71.8%
+          width: 14.2%
+      - type: state-label
+        entity: sensor.dvi_lv12_cv_fremlob
+        style:
+          top: 78.4%
+          left: 75%
+          font-size: 100%
+          color: rgb(8,0,0)
+          font-weight: normal
+      - type: state-label
+        entity: sensor.dvi_lv12_cv_retur
+        style:
+          top: 94%
+          left: 75%
+          font-size: 100%
+          color: rgb(8,0,0)
+          font-weight: normal
+  - type: conditional
+    conditions:
+      - entity: select.dvi_lv12_tv_state
+        state_not: "Off"
+    elements:
+      - type: state-icon
+        entity: binary_sensor.dvi_lv12_re12_el_patron
+        icon: mdi:lightning-bolt-outline
+        style:
+          top: 70%
+          left: 70%
+          "--state-binary_sensor-on-color": yellow
+          "--state-binary_sensor-off-color": blue grey
+  - type: conditional
+    conditions:
+      - entity: binary_sensor.dvi_lv12_re9_softstart_komp
+        state: "on"
+    elements:
+      - type: image
+        image: /local/images/HP_on.gif
+        style:
+          top: 62.7%
+          left: 18.4%
+          width: 33.9%
+      - type: image
+        image: /local/images/COMP_on.gif
+        style:
+          top: 62.75%
+          left: 46%
+          width: 21.3%
+      - type: state-label
+        entity: sensor.dvi_lv12_fordamper
+        style:
+          top: 77%
+          left: 16%
+          font-size: 100%
+          color: rgb(8,0,0)
+          font-weight: normal
+      - type: state-label
+        entity: sensor.dvi_lv12_hp_temp
+        style:
+          top: 31%
+          left: 43.5%
+          font-size: 100%
+          color: rgb(8,0,0)
+          font-weight: normal
+      - type: state-label
+        entity: sensor.dvi_lv12_lp_temp
+        style:
+          top: 31%
+          left: 34%
+          font-size: 100%
+          color: rgb(8,0,0)
+          font-weight: normal
+  - type: conditional
+    conditions:
+      - entity: select.vv_state
+        state: "On"
+    elements:
+      - type: state-label
+        entity: sensor.dvi_lv12_buffertank_vv
+        style:
+          top: 33%
+          left: 85%
+          font-size: 100%
+          color: rgb(8,0,0)
+          font-weight: normal
+  - type: state-icon
+    icon: mdi:snowflake-melt
+    entity: binary_sensor.dvi_lv12_re1_4_vejs_ventil_afrim
+    style:
+      top: 85%
+      left: 15%
+      "--state-binary_sensor-on-color": orange
+      "--state-binary_sensor-off-color": blue grey
+  - type: state-label
+    entity: sensor.dvi_lv12_udendorstemp
+    style:
+      top: 13%
+      left: 13%
+      font-size: 100%
+      color: rgb(8,0,0)
+      font-weight: normal
+  - type: state-label
+    entity: sensor.blank_blank
+    prefix: kurvetemperatur
+    style:
+      left: 48%
+      top: 13%
+      font-size: 1.0em
+      color: rgb(8,0,0)
+      font-weight: normal
+  - type: state-label
+    entity: sensor.dvi_lv12_kurvetemperatur
+    style:
+      top: 13%
+      left: 68%
+      color: rgb(8,0,0)
+      font-weight: normal
+      font-size: 100%
+  - type: state-label
+    entity: sensor.dvi_lv12_buffertank_cv
+    style:
+      top: 72.5%
+      left: 61%
+      font-size: 100%
+      color: rgb(8,0,0)
+      font-weight: normal
+  - type: state-icon
+    icon: mdi:information-slab-circle
+    entity: sensor.blank_blank
+    style:
+      top: "-2%"
+      left: 90%
+    tap_action:
+      action: fire-dom-event
+      browser_mod:
+        service: browser_mod.popup
+        data:
+          title: Information
+          content:
+            type: entities
+            entities:
+              - sensor.dvi_lv12_energy
+              - sensor.dvi_lv12_koretimer_kompressor
+              - sensor.dvi_lv12_koretimer_vv
+              - sensor.dvi_lv12_koretimer_el_patron
+  - type: state-icon
+    icon: mdi:radiator
+    entity: sensor.blank_blank
+    style:
+      top: 8%
+      left: 90%
+    tap_action:
+      action: fire-dom-event
+      browser_mod:
+        service: browser_mod.popup
+        data:
+          title: Centralvarme
+          content:
+            type: entities
+            entities:
+              - select.dvi_lv12_cv_state
+              - number.dvi_lv12_cv_curve
+              - select.dvi_lv12_tv_state
+              - input_select.natsaenk
+  - type: state-icon
+    icon: mdi:shower-head
+    entity: sensor.blank_blank
+    style:
+      top: 18%
+      left: 90%
+    tap_action:
+      action: fire-dom-event
+      browser_mod:
+        service: browser_mod.popup
+        data:
+          title: Varmtvandstemperatur
+          content:
+            type: entities
+            entities:
+              - number.dvi_lv12_vv_setpoint
+              - select.vv_state
+              - input_select.varmtvandsur
 
