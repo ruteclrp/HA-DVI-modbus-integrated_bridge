@@ -1,5 +1,5 @@
 {
-  "name": "DVI Integrated Bridge",
-  "content_in_root": true,
-  "render_readme": true
+    "name": "DVI Integrated Bridge",
+    "content_in_root": true,
+    "render_readme": true
 }
